@@ -7,6 +7,7 @@ const (
 	Promise
 	Accept
 	Accepted
+	Decide
 )
 
 type message struct {
@@ -30,4 +31,8 @@ func NewAcceptMessage(from, pn, pv int) message {
 
 func NewAcceptedMessage(from, pn int) message {
 	return message{t: Accepted, from: from, pn: pn}
+}
+
+func NewDecidedMessage(from, pv int) message {
+	return message{t: Decide, from: from, pv: pv}
 }
