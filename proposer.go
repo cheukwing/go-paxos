@@ -59,7 +59,7 @@ func (p *proposer) run() {
 		p.pn = max
 	}
 
-	p.decide()
+	p.chosen()
 }
 
 func (p *proposer) prepare() {
@@ -73,8 +73,8 @@ func (p *proposer) accept() {
 	broadcast(p.acceptors, msg)
 }
 
-func (p *proposer) decide() {
-	msg := NewDecidedMessage(p.id, p.pv)
+func (p *proposer) chosen() {
+	msg := NewChosenMessage(p.id, p.pv)
 	broadcast(p.learners, msg)
 }
 
