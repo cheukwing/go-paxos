@@ -9,11 +9,12 @@ type proposer struct {
 	learners  []chan message
 }
 
-func NewProposer(id int, acceptors, learners []chan message) *proposer {
+func NewProposer(id int, receives chan message, acceptors, learners []chan message) *proposer {
 	p := new(proposer)
 	p.id = id
 	p.pv = 0
 	p.pn = 0
+	p.receives = receives
 	p.acceptors = acceptors
 	p.learners = learners
 	return p
@@ -44,6 +45,7 @@ func (p *proposer) run() {
 			msg := <-p.receives
 			switch msg.t {
 			case Accepted:
+				responded[msg.from] = true
 				if msg.pn > max {
 					max = msg.pn
 				}
