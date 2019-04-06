@@ -1,5 +1,7 @@
 package paxos
 
+import "fmt"
+
 type acceptor struct {
 	id        int
 	apn       int
@@ -9,7 +11,7 @@ type acceptor struct {
 	proposers []chan message
 }
 
-func MakeAcceptor(id int, receives chan message, proposers []chan message) *acceptor {
+func NewAcceptor(id int, receives chan message, proposers []chan message) *acceptor {
 	a := new(acceptor)
 	a.id = id
 	a.apn = 0
@@ -21,6 +23,7 @@ func MakeAcceptor(id int, receives chan message, proposers []chan message) *acce
 }
 
 func (a *acceptor) run() {
+	fmt.Printf("Acceptor %v: started\n", a.id)
 	for {
 		msg := <-a.receives
 		switch msg.t {
@@ -29,6 +32,7 @@ func (a *acceptor) run() {
 				a.maxpn = msg.pn
 			}
 			a.proposers[msg.from] <- NewPromiseMessage(a.id, a.apn, a.apv)
+			fmt.Printf("Acceptor %v: sending Promise\n", a.id)
 		case Accept:
 			if msg.pn >= a.maxpn {
 				a.maxpn = msg.pn
@@ -36,7 +40,9 @@ func (a *acceptor) run() {
 				a.apv = msg.pv
 			}
 			a.proposers[msg.from] <- NewAcceptedMessage(a.id, a.maxpn)
+			fmt.Printf("Acceptor %v: sending Accepted\n", a.id)
 		default:
+			fmt.Printf("Acceptor %v: unknown message\n", a.id)
 		}
 	}
 

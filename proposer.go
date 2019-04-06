@@ -1,5 +1,7 @@
 package paxos
 
+import "fmt"
+
 type proposer struct {
 	id        int
 	pv        int
@@ -9,10 +11,10 @@ type proposer struct {
 	learners  []chan message
 }
 
-func NewProposer(id int, receives chan message, acceptors, learners []chan message) *proposer {
+func NewProposer(id, v int, receives chan message, acceptors, learners []chan message) *proposer {
 	p := new(proposer)
 	p.id = id
-	p.pv = 0
+	p.pv = v
 	p.pn = 0
 	p.receives = receives
 	p.acceptors = acceptors
@@ -21,6 +23,7 @@ func NewProposer(id int, receives chan message, acceptors, learners []chan messa
 }
 
 func (p *proposer) run() {
+	fmt.Printf("Proposer %v: started\n", p.id)
 	decided := false
 	for !decided {
 		p.prepare()
@@ -39,6 +42,7 @@ func (p *proposer) run() {
 			}
 		}
 
+		p.accept()
 		responded = make(map[int]bool)
 		max = p.pn
 		for len(responded) < len(p.acceptors)/2+1 {
@@ -65,16 +69,19 @@ func (p *proposer) run() {
 func (p *proposer) prepare() {
 	p.pn++
 	msg := NewPrepareMessage(p.id, p.pn)
+	fmt.Printf("Proposer %v: sending Prepare\n", p.id)
 	broadcast(p.acceptors, msg)
 }
 
 func (p *proposer) accept() {
 	msg := NewAcceptMessage(p.id, p.pn, p.pv)
+	fmt.Printf("Proposer %v: sending Accept\n", p.id)
 	broadcast(p.acceptors, msg)
 }
 
 func (p *proposer) chosen() {
 	msg := NewChosenMessage(p.id, p.pv)
+	fmt.Printf("Proposer %v: sending Chosen\n", p.id)
 	broadcast(p.learners, msg)
 }
 

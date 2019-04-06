@@ -18,3 +18,12 @@ func TestBroadcast(t *testing.T) {
 		}
 	}
 }
+
+func TestSingleProposer(t *testing.T) {
+	n := NewNetwork(1, 1, 1, []int{1})
+	go n.acceptors[0].run()
+	go n.proposers[0].run()
+	if n.learners[0].run() != 1 {
+		t.Errorf("Did not receive the proposed value!")
+	}
+}
