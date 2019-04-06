@@ -13,7 +13,8 @@ type acceptor struct {
 
 // NewAcceptor makes a new acceptor component with identifier id, receival
 // channel receives, and channels to proposers through proposers.
-func NewAcceptor(id int, receives chan message, proposers []chan message) *acceptor {
+func NewAcceptor(id int, receives chan message,
+	proposers []chan message) *acceptor {
 	a := new(acceptor)
 	a.id = id
 	a.apn = 0
@@ -24,7 +25,7 @@ func NewAcceptor(id int, receives chan message, proposers []chan message) *accep
 	return a
 }
 
-// Run starts the acceptor's Paxos algorithm.:w
+// Run starts the acceptor's Paxos algorithm.
 func (a *acceptor) Run() {
 	fmt.Printf("Acceptor %v: started\n", a.id)
 	for {

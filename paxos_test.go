@@ -90,7 +90,7 @@ func TestManyProposersManyAcceptorsDifferentValues(t *testing.T) {
 }
 
 func TestManyProposersManyAcceptorsSemiSameValues(t *testing.T) {
-	n := NewNetwork(5, 5, 2, []int{1, 1, 1, 2, 2})
+	n := NewNetwork(5, 5, 2, []int{1, 2, 1, 2, 1})
 	for _, a := range n.acceptors {
 		go a.Run()
 	}
