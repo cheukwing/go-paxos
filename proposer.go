@@ -11,7 +11,12 @@ type proposer struct {
 	learners  []chan message
 }
 
-func NewProposer(id, v int, receives chan message, acceptors, learners []chan message) *proposer {
+// NewProposer makes a new proposer component with identifier id, initial
+// proposal value v, receival channel receives, and channels to the other
+// components through acceptors and learners.
+func NewProposer(id, v int,
+	receives chan message,
+	acceptors, learners []chan message) *proposer {
 	p := new(proposer)
 	p.id = id
 	p.pv = v
@@ -22,10 +27,12 @@ func NewProposer(id, v int, receives chan message, acceptors, learners []chan me
 	return p
 }
 
-func (p *proposer) run() {
+// Run starts the proposer's Paxos algorithm.
+func (p *proposer) Run() {
 	fmt.Printf("Proposer %v: started\n", p.id)
 	decided := false
 	for !decided {
+		// PHASE 1: Prepare-Promise
 		p.prepare()
 		responded := make(map[int]bool)
 		max := p.pn
@@ -42,6 +49,7 @@ func (p *proposer) run() {
 			}
 		}
 
+		// PHASE 2: Accept-Accepted
 		p.accept()
 		responded = make(map[int]bool)
 		max = p.pn
@@ -63,6 +71,7 @@ func (p *proposer) run() {
 		p.pn = max
 	}
 
+	// Success: Chosen value
 	p.chosen()
 }
 

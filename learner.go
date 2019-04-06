@@ -7,6 +7,8 @@ type learner struct {
 	receives chan message
 }
 
+// NewLearner makes a new learner component with identifier id and
+// receival channel receives.
 func NewLearner(id int, receives chan message) *learner {
 	l := new(learner)
 	l.id = id
@@ -14,7 +16,8 @@ func NewLearner(id int, receives chan message) *learner {
 	return l
 }
 
-func (l *learner) run() int {
+// Run starts the learner to listen to chosen values.
+func (l *learner) Run() int {
 	v := -1
 	for v == -1 {
 		msg := <-l.receives

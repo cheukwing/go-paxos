@@ -1,15 +1,14 @@
 package paxos
 
-func ReturnsOne() int {
-	return 1
-}
-
 type network struct {
 	proposers []*proposer
 	acceptors []*acceptor
 	learners  []*learner
 }
 
+// NewNetwork creates a Paxos network with nProposers proposers (attempting to
+// initially propose the values respectively in vs), nAcceptors acceptors
+// and nLearners learners.
 func NewNetwork(nProposers, nAcceptors, nLearners int, vs []int) *network {
 	cProposers := makeChannels(nProposers)
 	cAcceptors := makeChannels(nAcceptors)
@@ -43,16 +42,17 @@ func makeChannels(n int) []chan message {
 	return chans
 }
 
-func (n *network) start() {
+// Starts a goroutine for all the components in the network.
+func (n *network) Start() {
 	for _, l := range n.learners {
-		go l.run()
+		go l.Run()
 	}
 
 	for _, a := range n.acceptors {
-		go a.run()
+		go a.Run()
 	}
 
 	for _, p := range n.proposers {
-		go p.run()
+		go p.Run()
 	}
 }
